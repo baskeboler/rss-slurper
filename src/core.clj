@@ -75,10 +75,10 @@
         options-summary
         ""
         "Actions:"
-        "  save-feed    Saves current feeds to db"
-        "  print-feed   Prints current feed"
-        "  count-items  Counts the number of news items in the database"
-        ""
+        "  save-feeds    Saves current feeds to db"
+        "  print-feeds   Prints current feed"
+        "  count-items   Counts the number of news items in the database"
+        "  listen        Starts the web server and waits"
         "Please refer to the manual page for more information."]
        (str/join \newline)))
 
@@ -112,10 +112,10 @@
       (exit (if ok?  0 1) exit-message)
 
       (let [{:keys [nlp-url port web-port]} options
-            sys                    (-> (system {:db-port     port
-                                                :nlp-url     nlp-url
-                                                :rss-url-map default-urls
-                                                :web-port web-port})
+            sys                             (-> (system {:db-port     port
+                                                         :nlp-url     nlp-url
+                                                         :rss-url-map default-urls
+                                                         :web-port    web-port})
                                        (component/start-system))]
         (set-break-handler! (fn [thread]
                               (component/stop sys)
@@ -125,8 +125,8 @@
             "save-feeds"  (save-feeds sys)
             "print-feeds" (print-feeds sys)
             "count-items" (log/info (format "Number of news items in db: %d"
-                                           (count-items sys)))
-            "listen" (do
+                                            (count-items sys)))
+            "listen"      (do
                        (log/info "listening ... ")
                        (.join (-> sys :web :server))))
           (catch Exception e
