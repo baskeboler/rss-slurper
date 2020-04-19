@@ -1,0 +1,39 @@
+{:paths ["src" "resources"]
+ :deps  {org.clojure/clojure        {:mvn/version "1.10.1"}
+         org.clojure/data.xml       {:mvn/version "0.0.8"}
+         org.clojure/tools.reader   {:mvn/version "1.3.2"}
+         org.clojure/tools.logging  {:mvn/version "1.0.0"}
+         cheshire                   {:mvn/version "5.10.0"}
+         org.clojure/tools.cli      {:mvn/version "1.0.194"}
+         ring/ring-core             {:mvn/version "1.6.3"}
+         ring/ring-jetty-adapter    {:mvn/version "1.6.3"}
+         ring/ring-json             {:mvn/version "0.5.0"}
+         crouton                    {:mvn/version "0.1.2"}
+         compojure                  {:mvn/version "1.6.1"}
+         com.stuartsierra/component {:mvn/version "1.0.0"}
+         clj-http                   {:mvn/version "3.10.0"}
+         com.rpl/specter            {:mvn/version "1.1.3"}
+         com.novemberain/monger     {:mvn/version "3.5.0"}
+         org.clojure/core.async     {:mvn/version "1.1.587"}
+         com.taoensso/carmine       {:mvn/version "2.19.1"}}
+ :aliases
+ {:test         {:extra-paths ["test"]
+                 :extra-deps  {org.clojure/test.check {:mvn/version "0.10.0"}}}
+  :runner
+  {:extra-deps {com.cognitect/test-runner
+                {:git/url "https://github.com/cognitect-labs/test-runner"
+                 :sha     "f7ef16dc3b8332b0d77bc0274578ad5270fbfedd"}}
+   :main-opts  ["-m" "cognitect.test-runner"
+                "-d" "test"]}
+  :uberjar      {:extra-deps {seancorfield/depstar {:mvn/version "0.5.2"}}
+                 :main-opts  ["-m" "hf.depstar.uberjar" "rss-slurper.jar"
+                              "-C" "-m" "core"]}
+  :native-image {:main-opts ["-m clj.native-image core"
+                             "--initialize-at-build-time"
+                             ;; optional native image name override
+                             "-H:Name=core"]
+                 :jvm-opts  ["-Dclojure.compiler.direct-linking=true"]
+                 :extra-deps
+                 {clj.native-image
+                  {:git/url "https://github.com/taylorwood/clj.native-image.git"
+                   :sha     "7708e7fd4572459c81f6a6b8e44c96f41cdd92d4"}}}}}
