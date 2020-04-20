@@ -18,8 +18,13 @@ Run the project's tests (they'll fail until you edit them):
 
     $ clojure -A:test:runner
 
+Watch the web ui build:
+    
+    $ clj -A:cljs watch app 
+    
 Build an uberjar:
 
+    $ clojure -A:cljs release app
     $ clojure -A:uberjar
 
 Run that uberjar:
