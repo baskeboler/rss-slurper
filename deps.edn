@@ -1,4 +1,4 @@
-{:paths ["src" "resources"]
+{:paths ["src" "resources" "cljs-src"]
  :deps  {org.clojure/clojure        {:mvn/version "1.10.1"}
          org.clojure/data.xml       {:mvn/version "0.0.8"}
          org.clojure/tools.reader   {:mvn/version "1.3.2"}
@@ -9,6 +9,7 @@
          ring/ring-jetty-adapter    {:mvn/version "1.6.3"}
          ring/ring-json             {:mvn/version "0.5.0"}
          crouton                    {:mvn/version "0.1.2"}
+         clj-time                   {:mvn/version "0.15.2"}
          compojure                  {:mvn/version "1.6.1"}
          com.stuartsierra/component {:mvn/version "1.0.0"}
          clj-http                   {:mvn/version "3.10.0"}
@@ -16,6 +17,7 @@
          com.novemberain/monger     {:mvn/version "3.5.0"}
          org.clojure/core.async     {:mvn/version "1.1.587"}
          com.taoensso/carmine       {:mvn/version "2.19.1"}}
+ 
  :aliases
  {:test         {:extra-paths ["test"]
                  :extra-deps  {org.clojure/test.check {:mvn/version "0.10.0"}}}
@@ -28,6 +30,9 @@
   :uberjar      {:extra-deps {seancorfield/depstar {:mvn/version "0.5.2"}}
                  :main-opts  ["-m" "hf.depstar.uberjar" "rss-slurper.jar"
                               "-C" "-m" "core"]}
+  :clj-kondo
+  {:extra-deps {clj-kondo {:mvn/version "2020.04.05"}}
+   :main-opts ["-m" "clj-kondo.main"]}
   :native-image {:main-opts ["-m clj.native-image core"
                              "--initialize-at-build-time"
                              ;; optional native image name override
@@ -36,4 +41,9 @@
                  :extra-deps
                  {clj.native-image
                   {:git/url "https://github.com/taylorwood/clj.native-image.git"
-                   :sha     "7708e7fd4572459c81f6a6b8e44c96f41cdd92d4"}}}}}
+                   :sha     "7708e7fd4572459c81f6a6b8e44c96f41cdd92d4"}}}
+  :cljs         {:extra-deps {thheller/shadow-cljs {:mvn/version "2.8.98"}
+                              reagent              {:mvn/version "0.10.0"}
+                              re-frame             {:mvn/version "0.12.0"}
+                              cljs-ajax            {:mvn/version "0.8.0"}}
+                 :main-opts  ["-m" "shadow.cljs.devtools.cli"]}}}

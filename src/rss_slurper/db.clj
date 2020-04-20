@@ -7,7 +7,9 @@
             [monger.collection :as mc]
             [rss-slurper.news :refer [news-item-identity]]
             [clojure.string :as str]
-            [clojure.tools.logging :as log]))
+            [clojure.tools.logging :as log]
+            [clj-time.core :as ctime]))
+            
 
 (defrecord Database [port host]
   component/Lifecycle
@@ -69,11 +71,15 @@
    :source 1})
 
 (def summary-fields
-  [:title :description :date-published :analysis.description.sentences.sentimentValue :analysis.description.sentences.sentiment])
+  [:title :source :description
+   :date-published
+   :analysis.description.sentences.sentimentValue
+   :analysis.description.sentences.sentiment])
+
 (defn get-all-news-item-summaries [this]
   (q/with-collection  (get-db this) news-items-collection
     (q/find {})
-    (q/fields [:title :description :date-published :analysis.description.sentences.sentimentValue :analysis.description.sentences.sentiment])
+    (q/fields summary-fields)
     (q/sort  (array-map :date-published 1))))
 
 (defn get-last-news-summaries
@@ -85,6 +91,14 @@
      (q/limit n)))
   ([this]
    (get-last-news-summaries this 100)))
+
+(defn get-filtered-summaries
+  ([this filter-map limit]
+   (q/with-collection (get-db this) news-items-collection
+     (q/find filter-map)
+     (q/fields summary-fields)
+     (q/sort (array-map :date-published -1))
+     (q/limit limit))))
 
 (defn get-summaries-with-score
   ([this n]
@@ -113,3 +127,14 @@
            [(str/join " - " k) (count v)])
          (into (sorted-map)))))
 
+
+(defn get-summaries-newer-than-n-hours
+  ([this hours limit] 
+   (let [since-when (-> (ctime/now)
+                        (ctime/minus- (ctime/hours hours)))]
+     (get-filtered-summaries
+      this
+      {:date-published {$gte (.toDate since-when)}}
+      limit)))
+  ([this hours]
+   (get-summaries-newer-than-n-hours this hours 1000)))

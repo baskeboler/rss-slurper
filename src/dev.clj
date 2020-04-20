@@ -1,5 +1,10 @@
 (ns dev
   (:require [rss-slurper.system :refer [system]]
+            [rss-slurper.db :as db]
+            [rss-slurper.rss :as rss]
+            [monger.conversion :refer :all]
+            [monger.operators :refer :all]
+            [clj-time.core :as ctime]
             [core :as core]
             [clojure.tools.cli :as cli]
             [com.stuartsierra.component :as component]))
