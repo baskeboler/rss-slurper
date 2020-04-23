@@ -5,7 +5,7 @@
    [clojure.tools.cli :refer [parse-opts]]
    [clojure.tools.logging :as log]
    [rss-slurper.system :refer [system print-feeds count-items save-feeds]]
-   [clojure.pprint :refer [pprint]]
+   ;; [clojure.pprint :refer [pprint]]
    [com.stuartsierra.component :as component]
    [rss-slurper.nlp :refer [nlp-host]]
    [clojure.repl :refer [set-break-handler!]])
