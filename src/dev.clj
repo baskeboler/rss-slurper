@@ -1,5 +1,5 @@
 (ns dev
-  (:require [rss-slurper.system :refer [system]]
+  (:require [rss-slurper.system :refer [system save-feeds print-feeds count-items]]
             [rss-slurper.db :as db]
             [rss-slurper.rss :as rss]
             [monger.conversion :refer :all]

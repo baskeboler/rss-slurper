@@ -26,7 +26,7 @@
    :body "Hello world"})
 
 (defn get-items [{:keys [server]}]
-  (log/info "serveR? " server)
+  ;; (log/info "server? " server)
   (json-resp
    (map
     #(update %  :_id str)

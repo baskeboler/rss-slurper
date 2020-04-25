@@ -5,8 +5,9 @@
             [day8.re-frame.tracing :refer-macros [fn-traced]]))
 
 (def initial-state
-  {:news-items {}
-   :selected-item nil})
+  {:news-items    {}
+   :selected-item nil
+   :current-view  :home})
 
 (rf/reg-event-db
  ::init
@@ -25,6 +26,13 @@
   [db [_ items]]
   (-> db
       (assoc :news-items items))))
+
+(rf/reg-event-db
+ ::set-current-view
+ (fn-traced
+  [db [_ view]]
+  (-> db
+      (assoc :current-view view))))
 
 (declare resolve-error-evt-vec)
 
@@ -77,3 +85,18 @@
                            [(:_id i) i])))]
     {:db       db
      :dispatch [::set-news-items items-map]})))
+
+(rf/reg-event-fx
+ ::get-stats
+ (fn-traced
+  [{:keys [db]} _]
+  {:db db
+   :dispatch [::get {:url "/stats"
+                     :on-success ::get-stats-success}]}))
+
+(rf/reg-event-db
+ ::get-stats-success
+ (fn-traced
+  [db [_ stats]]
+  (-> db
+      (assoc :stats stats))))

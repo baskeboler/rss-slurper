@@ -2,16 +2,22 @@
 {:source-paths
  ["cljs-src"
   "cljs-test"]
-;; :deps {:aliases [:cljs]}
- :deps true
+ :deps {:aliases [:shadow-cljs]}
+ ;; :deps true
  :dependencies
  []
- 
+ :nrepl {:port 9009}
  :builds
  {:app {:target :browser
-        :devtools {:after-load rss-slurper-ui.core/init!}
+        :devtools {:after-load rss-slurper-ui.core/init!
+                   :preloads [day8.re-frame-10x.preload]}
                    ;; :before-load (fn [] (println "stopping the app"))}
-                   
         :output-dir "resources/public/js"
-        :modules {:main {:init-fn rss-slurper-ui.core/init!}}}}}
-        
+        :modules {:main {:init-fn rss-slurper-ui.core/init!}}
+        :dev      {:compiler-options
+                   {:optimization :none
+                    :closure-defines
+                    {re_frame.trace.trace_enabled?                true 
+                     "re_frame.trace.trace_enabled_QMARK_"        true
+                     "day8.re_frame.tracing.trace_enabled_QMARK_" true
+                     "goog.DEBUG"                                 true}}}}}}        

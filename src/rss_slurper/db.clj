@@ -65,14 +65,18 @@
                   (map (comp parse-int :sentimentValue))
                   avg))
       (dissoc :analysis)))
-(def summary-proyection
-  {:title 1
-   :date-published 1
-   :source 1})
+
+;; (def summary-proyection
+  ;; {:title 1
+   ;; :date-published 1
+   ;; :source 1))
 
 (def summary-fields
-  [:title :source :description
+  [:title
+   :source
+   :description
    :date-published
+   :link
    :analysis.description.sentences.sentimentValue
    :analysis.description.sentences.sentiment])
 

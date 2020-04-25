@@ -14,3 +14,11 @@
  (fn-traced
   [db _]
   (:selected-item db)))
+
+(rf/reg-sub
+ ::current-view
+ (fn-traced [db _] (:current-view db)))
+
+(rf/reg-sub
+ ::stats
+ (fn-traced [db _] (:stats db)))
