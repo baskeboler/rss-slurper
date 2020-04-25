@@ -12,7 +12,7 @@ FIXME: explanation
 
 Run the project directly:
 
-    $ clojure -m rss-slurper.rss-slurper
+    $ clojure -m core
 
 Run the project's tests (they'll fail until you edit them):
 
@@ -24,12 +24,14 @@ Watch the web ui build:
     
 Build an uberjar:
 
-    $ clojure -A:cljs release app
+    $ clojure -A:shadow-cljs release app
     $ clojure -A:uberjar
+    
+    or just run `build.sh`
 
 Run that uberjar:
 
-    $ java -jar rss-slurper.jar
+    $ java -jar rss-slurper.jar --help
 
 ## Options
 

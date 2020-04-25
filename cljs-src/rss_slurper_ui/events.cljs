@@ -5,9 +5,10 @@
             [day8.re-frame.tracing :refer-macros [fn-traced]]))
 
 (def initial-state
-  {:news-items    {}
-   :selected-item nil
-   :current-view  :home})
+  {:news-items     {}
+   :selected-item  nil
+   :current-view   :home
+   :items-per-page 10})
 
 (rf/reg-event-db
  ::init
@@ -71,7 +72,7 @@
  (fn-traced
   [{:keys [db] :as cofx} _]
   {:db db
-   :dispatch [::get {:url "/last-hours/6"
+   :dispatch [::get {:url "/last-hours/48"
                      :on-success ::get-news-items-success}]}))
 
 (rf/reg-event-fx
