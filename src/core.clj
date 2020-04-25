@@ -34,7 +34,7 @@
    :washington-post {:politics "http://feeds.washingtonpost.com/rss/politics?tid=lk_inline_manual_2&itid=lk_inline_manual_2"
                      :world    "http://feeds.washingtonpost.com/rss/world?tid=lk_inline_manual_13&itid=lk_inline_manual_13"}})
 
-(def cli-options
+(def ^:export cli-options
   ;; An option with a required argument
   [["-p" "--port PORT" "Port number"
     :default 32768

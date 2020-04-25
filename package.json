@@ -22,7 +22,9 @@
   },
   "homepage": "https://github.com/baskeboler/rss-slurper#readme",
   "dependencies": {
+    "highlight.js": "9.15.10",
     "react": "16.13.0",
-    "react-dom": "16.13.0"
+    "react-dom": "16.13.0",
+    "react-highlight.js": "1.0.7"
   }
 }

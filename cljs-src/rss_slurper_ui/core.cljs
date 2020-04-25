@@ -1,21 +1,12 @@
 (ns rss-slurper-ui.core
   (:require [reagent.core :as reagent]
+            [reagent.dom :refer [render]]
             [re-frame.core :as rf]
-            [ajax.core :refer [GET POST]]
-            [clojure.string :as cstr])) 
+            [clojure.string :as cstr] 
+            [rss-slurper-ui.events :as events]
+            [rss-slurper-ui.subs :as subs]))
 
-
-(defn get-items [items-atom]
-  (GET "/last-hours/6" {:response-format :json
-                        :handler #(reset! items-atom %)
-                        :keywords? true}))
-
-(defn get-item [item-id item-atom]
-  (GET (str "/items/" item-id) {:response-format :json
-                                :handler         #(reset! item-atom %)
-                                :keywords?       true}))
-
-(defn item-table [items selected]
+(defn item-table [items]
   [:table.table.table-hover
    [:thead>tr
     [:th "date"]
@@ -23,37 +14,39 @@
     [:th "source"]]
    [:tbody
     (doall
-     (for [i @items]
-       ^{:key (str "item-" (:_id i))}
+     (for [[item-id i] @items]
+       ^{:key (str "item-" item-id)}
        [:tr
-        {:on-click #(get-item (:_id i) selected)}
+        {:on-click #(rf/dispatch [::events/set-selected-item i])}
         [:td (:date-published i)]
         [:td (:title i)]
         [:td (cstr/join ", " (:source i))]]))]])
 
 (defn app-component []
-  (let [items         (reagent/atom [])
-        selected-item (reagent/atom nil)]
-    (get-items items)
+  (let [items         (rf/subscribe [::subs/news-items])
+        selected-item (rf/subscribe [::subs/selected-item])]
     (fn []
       [:div.app-component.container
        [:h1.h1 "rss slurper ui"]
        [:p "hey there!"]
        [:div.row
         [:div.col
-         [item-table items selected-item]]
+         [item-table items]]
         (when-not (nil? @selected-item)
           [:div.col
            [:h3 (:title @selected-item)]
            [:h4 (cstr/join " - " (:source @selected-item))]
            [:p (:description @selected-item)]
            [:button.btn.btn-primary
-            {:on-click #(reset! selected-item nil)}
+            {:on-click #(rf/dispatch [::events/set-selected-item nil])}
             "dismiss"]])]])))
 
-;; (defn mount-components! []
-  ;; (rf/))
+(defn mount-components! []
+  (rf/dispatch-sync [::events/init])
+  (rf/dispatch [::events/get-news-items]))
+
 (defn ^:export init! []
   (println "init function!")
-  (reagent/render [app-component]
-                  (.getElementById js/document "app")))
+  (mount-components!)
+  (render [app-component]
+          (.getElementById js/document "app")))
