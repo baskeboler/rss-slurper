@@ -101,3 +101,18 @@
   [db [_ stats]]
   (-> db
       (assoc :stats stats))))
+
+(rf/reg-event-fx
+ ::get-sources
+ (fn-traced
+  [{:keys [db]} _]
+  {:db db
+   :dispatch [::get {:url "/sources"
+                     :on-success ::get-sources-success}]}))
+
+(rf/reg-event-db
+ ::get-sources-success
+ (fn-traced
+  [db [_ sources]]
+  (-> db
+      (assoc :sources sources))))

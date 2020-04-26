@@ -7,9 +7,10 @@
             [clojure.tools.logging :as log]
             [rss-slurper.nlp :as nlp]
             [rss-slurper.db :as db]
+            [rss-slurper.message-bus :as mbus]
             [rss-slurper.news :as news]
             [com.rpl.specter :as s]))
-(defrecord RSSController [nlp db url-map]
+(defrecord RSSController [nlp db url-map bus]
   component/Lifecycle
   (component/start [this]
     (log/info "starting RSS controller")
@@ -42,16 +43,20 @@
              (s/transform [s/ALL] (comp (partial news/analyze nlp) (partial news/item->news path))))))
 
 
-(defn save-all-feeds [c]
-  (doseq [k1 (keys (:url-map c))]
-    (doseq [k2   (keys (get (:url-map c) k1))
-            :let [f (get-feed c [k1 k2])]]
-      (db/save-feed (:db c) f)
-      (log/info "feeds saved"))))
+(defn save-all-feeds [{:keys [bus db url-map] :as this}]
+  (mbus/notification! bus {:message "starting to save all feeds" :type :save-all-feeds})
+  (doseq [k1 (keys url-map)]
+    (doseq [k2   (keys (get url-map k1))
+            :let [f (get-feed this [k1 k2])]]
+      (db/save-feed db f)
+      (mbus/notification! bus {:message "feed saved" :source [k1 k2] :type :feed-saved})
+                              
+      (log/info "feeds saved")))
+  (mbus/notification! bus {:message "finished saving all feeds" :type :save-all-feeds}))
 
 
 
-(defn print-feeds [this] 
-  (doseq [k1 (keys (:url-map this))]
-    (doseq [k2 (keys (get (:url-map this) k1))]
+(defn print-feeds [{:keys [bus url-map] :as this}] 
+  (doseq [k1 (keys url-map)]
+    (doseq [k2 (keys (get url-map k1))]
       (pprint (get-feed this [k1 k2])))))

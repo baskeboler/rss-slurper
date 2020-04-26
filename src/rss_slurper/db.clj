@@ -8,8 +8,8 @@
             [rss-slurper.news :refer [news-item-identity]]
             [clojure.string :as str]
             [clojure.tools.logging :as log]
-            [clj-time.core :as ctime]))
-            
+            [clj-time.core :as ctime])
+  (:import [java.time Instant Duration]))            
 
 (defrecord Database [port host]
   component/Lifecycle
@@ -142,3 +142,40 @@
       limit)))
   ([this hours]
    (get-summaries-newer-than-n-hours this hours 1000)))
+
+(defn get-latest-item-date
+  [this]
+  (some->
+   (q/with-collection (get-db this) news-items-collection
+     (q/find {})
+     (q/fields [:date-published])
+     (q/sort (array-map :date-published -1))
+     (q/limit 1))
+   first
+   :date-published))
+
+
+(defn get-duration-since-last-item
+  [this]
+  (Duration/between (.toInstant (get-latest-item-date this))
+                    (Instant/now)))
+
+(defn hours-since-last-item [this]
+  (.toHours (get-duration-since-last-item this)))
+
+(defmacro with-news-items [this & body]
+  `(q/with-collection (get-db ~this) news-items-collection
+     ~@body))
+
+(defn find-news-items [this & args]
+  (apply
+   (partial mc/find-maps (get-db this) news-items-collection)
+   args))
+
+(defn find-news-item-by-id [this id]
+  (mc/find-map-by-id (get-db this) news-items-collection id))
+
+(defn aggregate-news-items [this & args]
+  (apply
+   (partial mc/aggregate (get-db this) news-items-collection)
+   args))

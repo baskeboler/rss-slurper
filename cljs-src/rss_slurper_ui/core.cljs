@@ -70,14 +70,21 @@
 
 (defn home-view []
   (let [items         (rf/subscribe [::subs/news-items])
+        sources       (rf/subscribe [::subs/sources])
         selected-item (rf/subscribe [::subs/selected-item])]
     [:div.container-fluid
-     [:h1.h1 "rss slurper ui"]
-     [:p "hey there!"]
+     [:h1.display-1 "rss slurper ui"]
+     ;; [:p "hey there!"]
+     [:div.sources
+      (for [s @sources]
+        [:span.badge.badge-primary.p-2.m-1 s])]
      [:div.row
       [:div.col
        {:style {:max-height "calc(100vh - 120px)"
                 :overflow-y :scroll}}
+       [:button.btn.btn-primary
+        {:on-click #(rf/dispatch [::events/get-news-items])}
+        "Refresh"]
        [item-table items]]
       (when-not (nil? @selected-item)
         [:div.col
@@ -128,7 +135,10 @@
   (routing/app-routes!)
   (rf/dispatch-sync [::events/init])
   (rf/dispatch [::events/get-news-items])
-  (rf/dispatch [::events/get-stats]))
+  (rf/dispatch [::events/get-stats])
+  (rf/dispatch [::events/get-sources]))
+
+
 (defn ^:export init! []
   (println "init function!")
   (mount-components!)

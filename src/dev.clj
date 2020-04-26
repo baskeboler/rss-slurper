@@ -6,7 +6,10 @@
             [monger.operators :refer :all]
             [clj-time.core :as ctime]
             [core :as core]
+            [rss-slurper.stats :as stats]
+            [rss-slurper.message-bus :as b]
             [clojure.tools.cli :as cli]
+            [clojure.tools.logging :as log]
             [com.stuartsierra.component :as component]))
 
 (def ^:dynamic *system* nil)
@@ -15,6 +18,7 @@
 
 
 (defn start-system []
+  (log/info "starting system")
   (if-not (nil? *system*)
     *system*
     (let [{:keys [nlp-url port web-port]} (:options opts)
@@ -26,9 +30,11 @@
       (alter-var-root
        #'*system*
        (constantly
-        (component/start-system sys))))))
+        (component/start-system sys)))
+      nil)))
 
 (defn stop-system []
+  (log/info "stopping system")
   (if-not  (nil? *system*)
     (do
       (component/stop-system *system*)
@@ -37,4 +43,5 @@
 
 (defn restart []
   (stop-system)
-  (start-system))
+  (start-system)
+  nil)
